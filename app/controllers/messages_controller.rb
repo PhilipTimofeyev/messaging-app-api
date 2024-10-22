@@ -1,6 +1,6 @@
 class MessagesController < ApplicationController
   skip_before_action :verify_authenticity_token, raise: false
-  before_action :authenticate_devise_api_token!
+  before_action :authenticate_devise_api_token!, :set_current_user
   before_action :set_message, only: %i[ show update destroy ]
 
   # GET /messages
@@ -17,7 +17,8 @@ class MessagesController < ApplicationController
 
   # POST /messages
   def create
-    @message = Message.new(message_params)
+    # @message = Message.new(message_params)
+    @message = @current_user.messages.build(message_params)
 
     if @message.save
       render json: @message, status: :created, location: @message
@@ -44,6 +45,11 @@ class MessagesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_message
       @message = Message.find(params[:id])
+    end
+
+    def set_current_user
+      current_user_id = current_devise_api_token[:resource_owner_id]
+      @current_user = User.find(current_user_id)
     end
 
     # Only allow a list of trusted parameters through.
