@@ -5,4 +5,5 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable, :api
 
   has_and_belongs_to_many :groups
+  has_many :messages, dependent: :destroy
 end
