@@ -1,11 +1,13 @@
 class GroupsController < ApplicationController
   skip_before_action :verify_authenticity_token, raise: false
   before_action :authenticate_devise_api_token!, :set_current_user
+  before_action :set_selected_user
   before_action :set_group, only: %i[ show update destroy ]
 
   # GET /groups
   def index
-    @groups = Group.all
+    # Returns groups that contain the current and selected user
+    @groups = @current_user.groups.joins(:users).where(users: { id: @selected_user.id })
 
     render json: @groups
   end
@@ -49,7 +51,12 @@ class GroupsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def group_params
-      params.require(:group).permit(:title)
+      params.require(:group).permit(:title, :selected_user_id)
+    end
+
+    def set_selected_user
+      selected_user_id = group_params[:selected_user_id]
+      @selected_user = User.find(selected_user_id)
     end
 
     def set_current_user
