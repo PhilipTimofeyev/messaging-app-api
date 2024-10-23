@@ -1,7 +1,7 @@
 class GroupsController < ApplicationController
   skip_before_action :verify_authenticity_token, raise: false
   before_action :authenticate_devise_api_token!, :set_current_user
-  before_action :set_selected_user
+  before_action :set_selected_user, only: %i[ index ]
   before_action :set_group, only: %i[ show update destroy ]
 
   # GET /groups
@@ -14,7 +14,7 @@ class GroupsController < ApplicationController
 
   # GET /groups/1
   def show
-    # Returns all messages of group
+    # Returns group, users, and messages of group
     render json: { group: @group, users: @group.users, messages: @group.messages }
   end
 
