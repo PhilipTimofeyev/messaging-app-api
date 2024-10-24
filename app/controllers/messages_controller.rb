@@ -17,7 +17,14 @@ class MessagesController < ApplicationController
 
   # POST /messages
   def create
-    @message = @current_user.messages.build(message_params)
+    @message = nil
+
+    if message_params[:group_id]
+      # debugger
+      @message = @current_user.messages.build(message_params)
+      selected_group = Group.find(message_params[:group_id])
+      selected_group.messages << @message
+    end
 
     if @message.save
       render json: @message, status: :created, location: @message
@@ -53,6 +60,6 @@ class MessagesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def message_params
-      params.require(:message).permit(:content, :user_id, :group_id)
+      params.require(:message).permit(:content, :selected_user_id, :group_id)
     end
 end
