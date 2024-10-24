@@ -24,6 +24,13 @@ class MessagesController < ApplicationController
       @message = @current_user.messages.build(message_params)
       selected_group = Group.find(message_params[:group_id])
       selected_group.messages << @message
+    elsif message_params[:selected_user_id]
+      selected_user = User.find(message_params[:selected_user_id])
+      @message = @current_user.messages.build(content: message_params[:content])
+      new_group = Group.create
+      new_group.users << current_user
+      new_group.users << selected_user
+      new_group.messages << @message
     end
 
     if @message.save
