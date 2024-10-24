@@ -1,13 +1,13 @@
 class GroupsController < ApplicationController
   skip_before_action :verify_authenticity_token, raise: false
   before_action :authenticate_devise_api_token!, :set_current_user
-  before_action :set_selected_user, only: %i[ index ]
   before_action :set_group, only: %i[ show update destroy ]
 
   # GET /groups
   def index
     # Returns groups that contain the current and selected user
-    @groups = @current_user.groups.joins(:users).where(users: { id: @selected_user.id })
+    # @groups = @current_user.groups.joins(:users).where(users: { id: @selected_user.id })
+    @groups = @current_user.groups
 
     render json: @groups
   end
@@ -20,7 +20,15 @@ class GroupsController < ApplicationController
 
   # POST /groups
   def create
-    @group = Group.new(group_params)
+    @group = Group.new(title: group_params[:title])
+
+    user_ids = JSON.parse(group_params[:users])
+
+    user_ids.each do |user_id|
+      user = User.find(user_id)
+      @group.users << user
+    end
+    # debugger
 
     if @group.save
       render json: @group, status: :created, location: @group
@@ -44,18 +52,16 @@ class GroupsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_group
       @group = Group.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def group_params
-      params.require(:group).permit(:title, :selected_user_id)
+      params.require(:group).permit(:title, :users)
     end
 
     def set_selected_user
-      selected_user_id = group_params[:selected_user_id]
+      selected_user_id = JSON.parse(group_params[:users]).first
       @selected_user = User.find(selected_user_id)
     end
 
