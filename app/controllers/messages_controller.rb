@@ -17,21 +17,7 @@ class MessagesController < ApplicationController
 
   # POST /messages
   def create
-    @message = nil
-
-    if message_params[:group_id]
-      # debugger
-      @message = @current_user.messages.build(message_params)
-      selected_group = Group.find(message_params[:group_id])
-      selected_group.messages << @message
-    elsif message_params[:selected_user_id]
-      selected_user = User.find(message_params[:selected_user_id])
-      @message = @current_user.messages.build(content: message_params[:content])
-      new_group = Group.create
-      new_group.users << current_user
-      new_group.users << selected_user
-      new_group.messages << @message
-    end
+    @message = @current_user.messages.build(message_params)
 
     if @message.save
       render json: @message, status: :created, location: @message
@@ -55,7 +41,6 @@ class MessagesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_message
       @message = Message.find(params[:id])
     end
@@ -65,8 +50,7 @@ class MessagesController < ApplicationController
       @current_user = User.find(current_user_id)
     end
 
-    # Only allow a list of trusted parameters through.
     def message_params
-      params.require(:message).permit(:content, :selected_user_id, :group_id)
+      params.require(:message).permit(:content)
     end
 end
