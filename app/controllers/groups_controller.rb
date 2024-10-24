@@ -23,12 +23,10 @@ class GroupsController < ApplicationController
     @group = Group.new(title: group_params[:title])
 
     user_ids = JSON.parse(group_params[:users])
+    message_id = JSON.parse(group_params[:message_id])
 
-    user_ids.each do |user_id|
-      user = User.find(user_id)
-      @group.users << user
-    end
-    # debugger
+    @group.add_users(user_ids)
+    @group.add_message(message_id)
 
     if @group.save
       render json: @group, status: :created, location: @group
@@ -57,12 +55,7 @@ class GroupsController < ApplicationController
     end
 
     def group_params
-      params.require(:group).permit(:title, :users)
-    end
-
-    def set_selected_user
-      selected_user_id = JSON.parse(group_params[:users]).first
-      @selected_user = User.find(selected_user_id)
+      params.require(:group).permit(:title, :users, :message_id)
     end
 
     def set_current_user
