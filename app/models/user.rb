@@ -4,6 +4,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :api
 
+  validates :password_confirmation, presence: true, on: :create
+
   has_and_belongs_to_many :groups
   has_many :messages, dependent: :destroy
 end
