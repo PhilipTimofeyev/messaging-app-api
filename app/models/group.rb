@@ -12,7 +12,8 @@ class Group < ApplicationRecord
     # end
 
     def add_users(users)
-      users.each do |user_id|
+      users_arr = users.to_h.values.map(&:to_i)
+      users_arr.each do |user_id|
         user = User.find(user_id)
         self.users << user
       end

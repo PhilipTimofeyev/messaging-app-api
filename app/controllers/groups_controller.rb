@@ -22,11 +22,12 @@ class GroupsController < ApplicationController
   def create
     @group = Group.new(title: group_params[:title])
 
-    user_ids = JSON.parse(group_params[:users])
+    user_ids = group_params[:users]
     message_id = JSON.parse(group_params[:message_id])
 
     @group.add_users(user_ids)
     @group.add_message(message_id)
+    @group.users << @current_user
 
     if @group.save
       render json: @group, status: :created, location: @group
@@ -37,7 +38,7 @@ class GroupsController < ApplicationController
 
   # PATCH/PUT /groups/1
   def update
-    if @group.update(group_params)
+    if @group.add_message(group_params[:message_id])
       render json: @group
     else
       render json: @group.errors, status: :unprocessable_entity
@@ -55,7 +56,7 @@ class GroupsController < ApplicationController
     end
 
     def group_params
-      params.require(:group).permit(:title, :users, :message_id)
+      params.require(:group).permit(:title, :message_id, users: {})
     end
 
     def set_current_user
