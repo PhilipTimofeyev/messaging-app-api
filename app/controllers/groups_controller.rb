@@ -30,7 +30,7 @@ class GroupsController < ApplicationController
     @group.users << @current_user
 
     if @group.save
-      render json: @group, status: :created, location: @group
+      render json:  { group: @group, users: @group.users, messages: @group.messages }, status: :created, location: @group
     else
       render json: @group.errors, status: :unprocessable_entity
     end
@@ -39,7 +39,7 @@ class GroupsController < ApplicationController
   # PATCH/PUT /groups/1
   def update
     if @group.add_message(group_params[:message_id])
-      render json: @group
+      render json: { group: @group, users: @group.users, messages: @group.messages }
     else
       render json: @group.errors, status: :unprocessable_entity
     end
