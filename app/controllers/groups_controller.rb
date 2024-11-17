@@ -14,8 +14,15 @@ class GroupsController < ApplicationController
 
   # GET /groups/1
   def show
+    group_messages_with_image = @group.messages.map do |message|
+      if message.image.attached?
+        message.as_json.merge(image: url_for(message.image))
+      else
+        message
+      end
+    end
     # Returns group, users, and messages of group
-    render json: { group: @group, users: @group.users, messages: @group.messages }
+    render json: { group: @group, users: @group.users, messages: group_messages_with_image }
   end
 
   # POST /groups
