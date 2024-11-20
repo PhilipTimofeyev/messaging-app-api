@@ -6,7 +6,7 @@ class GroupsController < ApplicationController
   # GET /groups
   def index
     # Returns groups that contain the current and selected user
-    # @groups = @current_user.groups.joins(:users).where(users: { id: @selected_user.id })
+    #
     @groups = @current_user.groups
 
     render json: @groups
@@ -14,15 +14,10 @@ class GroupsController < ApplicationController
 
   # GET /groups/1
   def show
-    group_messages_with_image = @group.messages.order(:created_at).map do |message|
-      if message.image.attached?
-        message.as_json.merge(image: url_for(message.image))
-      else
-        message
-      end
-    end
+    group_messages = @group.get_group_messages_with_images
+
     # Returns group, users, and messages of group
-    render json: { group: @group, users: @group.users, messages: group_messages_with_image }
+    render json: { group: @group, users: @group.users, messages: group_messages }
   end
 
   # POST /groups
@@ -36,16 +31,10 @@ class GroupsController < ApplicationController
     @group.add_message(message_id)
     @group.users << @current_user
 
-    group_messages_with_image = @group.messages.order(:created_at).map do |message|
-      if message.image.attached?
-        message.as_json.merge(image: url_for(message.image))
-      else
-        message
-      end
-    end
+    group_messages = @group.get_group_messages_with_images
 
     if @group.save
-      render json:  { group: @group, users: @group.users, messages: group_messages_with_image }, status: :created, location: @group
+      render json:  { group: @group, users: @group.users, messages: group_messages }, status: :created, location: @group
     else
       render json: @group.errors, status: :unprocessable_entity
     end
@@ -54,14 +43,8 @@ class GroupsController < ApplicationController
   # PATCH/PUT /groups/1
   def update
     if @group.add_message(group_params[:message_id])
-      group_messages_with_image = @group.messages.order(:created_at).map do |message|
-      if message.image.attached?
-        message.as_json.merge(image: url_for(message.image))
-      else
-        message
-      end
-    end
-      render json: { group: @group, users: @group.users, messages: group_messages_with_image }
+        group_messages = @group.get_group_messages_with_images
+      render json: { group: @group, users: @group.users, messages: group_messages }
     else
       render json: @group.errors, status: :unprocessable_entity
     end
