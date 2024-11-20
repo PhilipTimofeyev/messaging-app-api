@@ -17,7 +17,8 @@ class MessagesController < ApplicationController
 
   # POST /messages
   def create
-    @message = @current_user.messages.build(message_params)
+    @message = @current_user.messages.build(content: message_params[:content])
+    @message.image.attach(message_params[:image]) unless message_params[:image] == "undefined"
 
     if @message.save
       render json: @message, status: :created, location: @message
@@ -51,6 +52,6 @@ class MessagesController < ApplicationController
     end
 
     def message_params
-      params.require(:message).permit(:content)
+      params.require(:message).permit(:content, :image)
     end
 end
