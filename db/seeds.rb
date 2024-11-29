@@ -7,3 +7,10 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+
+gods = %w[Zeus@olympus.com Athena@olympus.com Ares@olympus.com Aphrodite@olympus.com Demeter@olympus.com Hera@olympus.com]
+
+gods.each do |god|
+  User.create!(email: god, password: "123456", password_confirmation: "123456")
+end
