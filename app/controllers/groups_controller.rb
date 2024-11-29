@@ -35,7 +35,6 @@ class GroupsController < ApplicationController
       group_messages = @group.get_group_messages_with_images
       render json:  { group: @group, users: @group.users, messages: group_messages }, status: :created, location: @group
     else
-      puts "OLD GROUP----------"
       render json: @group.errors, status: :unprocessable_entity
     end
   end
