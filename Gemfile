@@ -47,6 +47,6 @@ end
 gem "devise", "~> 4.9"
 gem "devise-api", "~> 0.2.0"
 
-gem "aws-sdk-s3", "~> 1.174"
+gem "aws-sdk-s3", "~> 1.175"
 
 gem "dotenv-rails", "~> 3.1"
